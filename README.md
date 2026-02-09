@@ -1,19 +1,24 @@
 Ethical Issues
 Lead: Uthman
+
 Uthman led the identification of ethical issues relevant to the Lost & Found application. This included considering user privacy, responsible sharing of information, and preventing misuse of the platform. He supported group discussion around ethical risks and helped ensure the project aligns with professional and academic standards.
 
 Support: Mohamed 
+
 Mohamed contributed by reviewing the identified ethical concerns and linking them back to the project theme of community building. He helped ensure the ethical considerations were realistic and relevant to a university environment.
 
 User Personas
 Lead: Lyes
+
 Lyes led the creation of user personas by identifying realistic target users of the application. He helped define user goals, motivations, and potential challenges when interacting with the platform, ensuring the personas reflected real-world use cases.
 
 Support:Abdi
+
 Abdi supported persona development by contributing ideas around accessibility, usability, and different user needs, helping refine the personas and ensure they were detailed and meaningful.
 
 Meeting Records
 Lead: Ibrahim
+
 Ibrahim was responsible for documenting meeting discussions and decisions made during Sprint 1. This included recording attendance, summarising key points discussed, and noting agreed actions to ensure transparency and accountability within the group.
 
 Support: Uthman
@@ -21,6 +26,7 @@ Uthman assisted by reviewing meeting notes for clarity and accuracy and ensuring
 
 Code of Conduct
 Lead: Abdiaziz
+
 Abdiaziz led the creation of the Code of Conduct, outlining expectations for respectful communication, collaboration, and accountability within the group. He ensured that all members agreed on professional behaviour standards before development begins.
 
 Support: Mohamed Ali
