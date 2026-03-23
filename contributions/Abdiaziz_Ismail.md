@@ -10,7 +10,7 @@ Contributions:
 
 Sprint 2 contribution 
 
-Name Abdiaziz Ismail 
+
 
 Contributions:
 -created database design
