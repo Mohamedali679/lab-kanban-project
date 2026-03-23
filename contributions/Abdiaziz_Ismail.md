@@ -8,7 +8,7 @@ Contributions:
 - Contributed to the project by writing the team’s Code of Conduct, which set clear rules for communication, responsibility, and teamwork.
 
 
-Sprint 2 contribution 
+Sprint 3 contribution 
 
 
 
