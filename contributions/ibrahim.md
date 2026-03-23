@@ -6,3 +6,6 @@ contributions;
 - made sure meetings were planned
 - made sure that we was all on the same page
 - made sure that i noted meeting records and typed them up
+
+
+contributed on meeting records
