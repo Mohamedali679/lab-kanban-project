@@ -1,0 +1,17 @@
+doctype html
+html
+  head
+    title User Profile
+  body
+    h1= user.name
+    p Email: #{user.email}
+
+    h2 Items posted by this user
+    each item in userItems
+      div
+        h3= item.title
+        p= item.description
+        p Status: #{item.status}
+        hr
+
+    a(href="/users") Back to users

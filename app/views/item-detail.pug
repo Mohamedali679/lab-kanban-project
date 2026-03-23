@@ -1,0 +1,11 @@
+doctype html
+html
+  head
+    title Item Detail
+  body
+    h1= item.title
+    p Description: #{item.description}
+    p Location: #{item.location}
+    p Status: #{item.status}
+    p Category: #{item.category}
+    a(href="/items") Back to items

@@ -3,8 +3,9 @@ const app = express();
 
 app.use(express.static("static"));
 app.set("view engine", "pug");
-app.set("views", "./app/views");
+app.set("views", "./views");
 
+// sample data for now
 const items = [
   {
     id: 1,
@@ -39,14 +40,17 @@ const users = [
   }
 ];
 
+// home
 app.get("/", function(req, res) {
   res.send("Lost2Found is running");
 });
 
+// listing page
 app.get("/items", function(req, res) {
   res.render("items", { items: items });
 });
 
+// detail page
 app.get("/items/:id", function(req, res) {
   const item = items.find(i => i.id == req.params.id);
   if (!item) {
@@ -55,10 +59,12 @@ app.get("/items/:id", function(req, res) {
   res.render("item-detail", { item: item });
 });
 
+// users list page
 app.get("/users", function(req, res) {
   res.render("users", { users: users });
 });
 
+// user profile page
 app.get("/users/:id", function(req, res) {
   const user = users.find(u => u.id == req.params.id);
   if (!user) {
@@ -69,6 +75,7 @@ app.get("/users/:id", function(req, res) {
   res.render("user-profile", { user: user, userItems: userItems });
 });
 
+// categories page
 app.get("/categories", function(req, res) {
   const categories = [...new Set(items.map(i => i.category))];
   res.render("categories", { categories: categories });

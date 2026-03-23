@@ -1,0 +1,15 @@
+doctype html
+html
+  head
+    title Items
+  body
+    h1 Lost2Found - Listing Page
+    each item in items
+      div
+        h2
+          a(href="/items/" + item.id)= item.title
+        p= item.description
+        p Location: #{item.location}
+        p Status: #{item.status}
+        p Category: #{item.category}
+        hr
