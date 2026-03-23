@@ -13,6 +13,7 @@ Sprint 2 contribution
 
 
 Contributions:
+
 -created database design
 
 -Helped with the user stories 
