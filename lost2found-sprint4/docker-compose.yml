@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: lost2found_app
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_USER: lost2found_user
+      DB_PASSWORD: lost2found_pass
+      DB_NAME: lost2found_db
+      SESSION_SECRET: lost2found-sprint4-2026
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    container_name: lost2found_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: lost2found_db
+      MYSQL_USER: lost2found_user
+      MYSQL_PASSWORD: lost2found_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "lost2found_user", "-plost2found_pass"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: lost2found_phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: rootpassword
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  db_data:

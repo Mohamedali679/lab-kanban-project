@@ -1,0 +1,30 @@
+extends ../layout
+
+block content
+  section.page-header
+    .container
+      h1 Notifications
+      p.page-sub Your recent activity and alerts
+
+  section.notif-section
+    .container
+      if notifications.length
+        .notif-list
+          each n in notifications
+            .notif-item(class=n.is_read?'notif-read':'notif-unread')
+              .notif-icon
+                if n.type==='match'   🤖
+                if n.type==='message' 💬
+                if n.type==='rating'  ⭐
+                if n.type==='welcome' 🎉
+                if n.type==='system'  📢
+              .notif-body
+                p.notif-msg= n.message
+                p.notif-time= new Date(n.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})
+              if n.link
+                a.notif-link(href=n.link) View →
+      else
+        .empty-state
+          .empty-icon 🔔
+          h3 No notifications yet
+          p You'll be notified of matches, messages and ratings here.

@@ -1,0 +1,143 @@
+extends ../layout
+
+block content
+  section.detail-section
+    .container.detail-container
+      .detail-back
+        a(href="/items") ← Back to listings
+
+      .detail-card
+        .detail-badges
+          span.item-type(class=item.type==='lost'?'type-lost':'type-found')
+            = item.type==='lost' ? '🔍 Lost' : '✋ Found'
+          span.item-cat= `${item.category_icon||'📦'} ${item.category_name||'Other'}`
+          if item.status==='resolved'
+            span.badge-resolved ✅ Resolved
+          if item.reward_points > 0
+            span.reward-badge 🏆 #{item.reward_points} reward points
+
+        h1.detail-title= item.title
+
+        .detail-meta-row
+          span 📍 #{item.location}
+          span 📅 #{new Date(item.date_occurred).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}
+          span 👤 #{item.user_name}
+          span 👁 #{item.views} views
+
+        if item.image_url
+          img.detail-image(src=item.image_url alt=item.title)
+
+        .detail-description
+          h3 Description
+          p= item.description
+
+        if tags && tags.length
+          .detail-tags
+            h3 Tags
+            .tags-list
+              each tag in tags
+                span.tag= tag.name
+
+        //- SMART MATCHES
+        if matches && matches.length
+          .matches-box
+            h3 🤖 Potential Matches Found
+            p Our algorithm matched this item with the following:
+            each m in matches
+              a.match-row(href=`/items/${m.id}`)
+                .match-score #{Math.round(m.score*100)}%
+                .match-info
+                  .match-title= m.title
+                  .match-loc 📍 #{m.location}
+                  .match-cat= `${m.category_icon||'📦'} ${m.category_name||'Other'}`
+
+        //- CONTACT BOX
+        .contact-box
+          h3
+            = item.type==='lost' ? '📬 Contact the Owner' : '📬 Contact the Finder'
+          if user && user.id !== item.user_id
+            p
+              | Get in touch with #[strong= item.user_name] (#{item.student_id || 'Roehampton University'})
+            .contact-actions
+              a.btn-message(href=`/messages/${item.user_id}?item=${item.id}`) 💬 Send Message
+              a.contact-email(href=`mailto:${item.user_email}`) ✉️ #{item.user_email}
+            p.contact-note Please describe the item clearly to verify before any handover.
+          else if user && user.id === item.user_id
+            p This is your listing. Use the controls below to manage it.
+          else
+            p
+              a(href="/users/login") Log in
+              |  with your Roehampton account to contact this person.
+
+        //- OWNER CONTROLS
+        if user && user.id === item.user_id
+          .owner-controls
+            h3 Manage Your Listing
+            if item.status === 'active'
+              form(method="POST" action=`/items/${item.id}/resolve` style="display:inline")
+                button.btn-resolve(type="submit" onclick="return confirm('Mark as resolved?')") ✅ Mark Resolved (+20pts)
+            form(method="POST" action=`/items/${item.id}/delete` style="display:inline;margin-left:0.75rem")
+              button.btn-delete(type="submit" onclick="return confirm('Delete this item?')") 🗑 Delete
+
+        //- RATING FORM
+        if user && user.id !== item.user_id && item.status === 'resolved' && !hasRated
+          .rating-box
+            h3 ⭐ Rate #{item.user_name}
+            p Leave a rating after a successful handover.
+            form.rating-form(method="POST" action="/ratings/submit")
+              input(type="hidden" name="rated_id" value=item.user_id)
+              input(type="hidden" name="item_id"  value=item.id)
+              .star-input
+                each n in [1,2,3,4,5]
+                  input(type="radio" name="score" id=`star${n}` value=n)
+                  label(for=`star${n}`) ★
+              textarea.form-textarea(name="comment" placeholder="Optional comment…" rows="3")
+              button.submit-btn(type="submit") Submit Rating →
+
+        if hasRated
+          .rating-done ✅ You have already rated this user for this item.
+
+      //- SIDEBAR
+      .detail-sidebar
+        .sidebar-card
+          h4 Item Summary
+          .sidebar-row
+            span.sidebar-key Type
+            span.sidebar-val= item.type.charAt(0).toUpperCase()+item.type.slice(1)
+          .sidebar-row
+            span.sidebar-key Category
+            span.sidebar-val= item.category_name||'Other'
+          .sidebar-row
+            span.sidebar-key Location
+            span.sidebar-val= item.location
+          .sidebar-row
+            span.sidebar-key Date
+            span.sidebar-val= new Date(item.date_occurred).toLocaleDateString('en-GB')
+          .sidebar-row
+            span.sidebar-key Status
+            span.sidebar-val= item.status.charAt(0).toUpperCase()+item.status.slice(1)
+          if item.reward_points > 0
+            .sidebar-row
+              span.sidebar-key Reward
+              span.sidebar-val.accent= item.reward_points + ' points'
+
+        .sidebar-card
+          h4 About #{item.user_name}
+          .sidebar-row
+            span.sidebar-key Points
+            span.sidebar-val= item.user_points || 0
+          .sidebar-row
+            span.sidebar-key Rating
+            if item.user_rating
+              span.sidebar-val ⭐ #{item.user_rating}/5 (#{item.rating_count} reviews)
+            else
+              span.sidebar-val No ratings yet
+          a.sidebar-profile(href=`/users/${item.user_id}`) View Profile →
+
+        .sidebar-card.sidebar-safety
+          h4 🔒 Safety Tips
+          ul
+            li Meet in a public area on campus
+            li Verify ownership before handing over
+            li Use in-app messaging only
+            li Report suspicious activity to Security

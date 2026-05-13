@@ -1,0 +1,38 @@
+extends ../layout
+
+block content
+  section.page-header
+    .container
+      h1 Community Members
+      p.page-sub Ranked by community contribution points
+
+  section.users-section
+    .container
+      .users-grid
+        each u, i in users
+          a.user-card(href=`/users/${u.id}`)
+            .user-rank= i + 1
+            .user-avatar= u.name.split(' ').map(w=>w[0]).join('').substring(0,2)
+            .user-info
+              .user-name= u.name
+              .user-id= u.student_id || 'Roehampton University'
+              .user-stars
+                if u.avg_rating
+                  each n in [1,2,3,4,5]
+                    span(class=n<=u.avg_rating?'star-on':'star-off') ★
+                  span.user-rating  #{u.avg_rating}/5
+                else
+                  span.user-norating No ratings yet
+            .user-stats
+              .ustat
+                .ustat-n= u.lost_count || 0
+                .ustat-l Lost
+              .ustat
+                .ustat-n= u.found_count || 0
+                .ustat-l Found
+              .ustat
+                .ustat-n= u.resolved_count || 0
+                .ustat-l Resolved
+            .user-points
+              span.pts-num= u.points || 0
+              span.pts-label pts

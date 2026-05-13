@@ -1,0 +1,22 @@
+extends ../layout
+
+block content
+  section.auth-section
+    .auth-card
+      .auth-logo
+        span.brand-lost lost2
+        span.brand-found found
+      h1.auth-title Welcome back
+      p.auth-sub Sign in with your Roehampton University account
+      if error
+        .auth-error= error
+      form.auth-form(method="POST" action="/users/login")
+        .form-group
+          label.form-label Email
+          input.form-input(type="email" name="email" required placeholder="yourname@roehampton.ac.uk" autocomplete="email")
+        .form-group
+          label.form-label Password
+          input.form-input(type="password" name="password" required placeholder="Your password")
+        button.submit-btn(type="submit") Login →
+      p.auth-switch Don't have an account? #[a(href="/users/register") Register]
+      p.auth-note 🔒 Roehampton University accounts only

@@ -1,0 +1,59 @@
+extends ../layout
+
+block content
+  section.page-header
+    .container
+      h1 Browse Items
+      p.page-sub All lost &amp; found listings at Roehampton University
+      if user
+        a.btn-post(href="/items/new/post") + Post Item
+
+  section.browse-section
+    .container
+      form.filter-bar(method="GET" action="/items")
+        .search-wrap
+          input.search-input(type="text" name="q" value=filters.q||'' placeholder="Search keyword, location…")
+          button.search-btn(type="submit") Search
+        .filter-selects
+          select.filter-sel(name="type" onchange="this.form.submit()")
+            option(value="" selected=!filters.type) All Types
+            option(value="lost"  selected=filters.type==='lost')  🔍 Lost
+            option(value="found" selected=filters.type==='found') ✋ Found
+          select.filter-sel(name="category" onchange="this.form.submit()")
+            option(value="" selected=!filters.category) All Categories
+            each cat in categories
+              option(value=cat.id selected=filters.category==cat.id) #{cat.icon} #{cat.name}
+          select.filter-sel(name="sort" onchange="this.form.submit()")
+            option(value="newest" selected=filters.sort==='newest'||!filters.sort) Newest first
+            option(value="oldest" selected=filters.sort==='oldest') Oldest first
+            option(value="reward" selected=filters.sort==='reward') Highest reward
+          if filters.type||filters.category||filters.q
+            a.clear-filters(href="/items") ✕ Clear
+
+      .items-tabs
+        a.items-tab(href="/items"            class=(!filters.type?'active':'')) All (#{items.length})
+        a.items-tab(href="/items?type=lost"  class=(filters.type==='lost'?'active':'')) 🔍 Lost
+        a.items-tab(href="/items?type=found" class=(filters.type==='found'?'active':'')) ✋ Found
+
+      if items.length
+        .items-grid.items-grid-full
+          each item in items
+            a.item-card(href=`/items/${item.id}`)
+              .item-card-header
+                span.item-type(class=item.type==='lost'?'type-lost':'type-found')
+                  = item.type==='lost' ? '🔍 Lost' : '✋ Found'
+                span.item-cat= `${item.category_icon||'📦'} ${item.category_name||'Other'}`
+                if item.reward_points > 0
+                  span.reward-badge +#{item.reward_points}pts
+              h3.item-title= item.title
+              p.item-desc= item.description.substring(0,110)+(item.description.length>110?'…':'')
+              .item-card-footer
+                span.item-loc 📍 #{item.location.split(',')[0]}
+                span.item-date= new Date(item.date_occurred).toLocaleDateString('en-GB',{day:'numeric',month:'short'})
+      else
+        .empty-state
+          .empty-icon 🔍
+          h3 No items found
+          p Try adjusting your filters.
+          if user
+            a.btn-post(href="/items/new/post") Post an item

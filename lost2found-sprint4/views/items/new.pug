@@ -1,0 +1,70 @@
+extends ../layout
+
+block content
+  section.form-section
+    .container.form-container
+      .form-back
+        a(href="/items") ← Back
+      h1.form-title Post an Item
+      p.form-sub Report a lost or found item to the Roehampton University community. Earn 5 points for posting!
+      if error
+        .auth-error Please fill in all required fields.
+
+      form.post-form(method="POST" action="/items/new/post" enctype="multipart/form-data")
+        .form-group
+          label.form-label Item Type *
+          .type-toggle
+            label.type-opt(for="type-lost")
+              input(type="radio" id="type-lost" name="type" value="lost" checked)
+              span.type-btn-lost 🔍 I Lost This
+            label.type-opt(for="type-found")
+              input(type="radio" id="type-found" name="type" value="found")
+              span.type-btn-found ✋ I Found This
+
+        .form-group
+          label.form-label(for="title") Item Title *
+          input.form-input(type="text" id="title" name="title" required placeholder="e.g. Black iPhone 15 Pro…")
+
+        .form-row
+          .form-group
+            label.form-label(for="category_id") Category *
+            select.form-select(id="category_id" name="category_id" required)
+              option(value="") Select…
+              each cat in categories
+                option(value=cat.id) #{cat.icon} #{cat.name}
+          .form-group
+            label.form-label(for="date_occurred") Date *
+            input.form-input(type="date" id="date_occurred" name="date_occurred" required)
+
+        .form-group
+          label.form-label(for="location") Location on Campus *
+          input.form-input(type="text" id="location" name="location" required placeholder="e.g. Roehampton Library 3rd Floor…")
+
+        .form-group
+          label.form-label(for="description") Description *
+          textarea.form-textarea(id="description" name="description" required placeholder="Colour, brand, distinguishing features…")
+
+        .form-row
+          .form-group
+            label.form-label(for="reward_points") Reward Points (optional)
+            input.form-input(type="number" id="reward_points" name="reward_points" min="0" max="100" value="0" placeholder="0")
+            .form-hint Points offered to the finder/owner. Only for lost items.
+          .form-group
+            label.form-label(for="image") Photo (optional)
+            input.form-input(type="file" id="image" name="image" accept="image/*")
+            .form-hint Max 5MB. JPG, PNG, GIF or WebP.
+
+        if tags && tags.length
+          .form-group
+            label.form-label Tags (optional)
+            .tags-check
+              each tag in tags
+                label.tag-check-label
+                  input(type="checkbox" name="tags" value=tag.id)
+                  span= tag.name
+
+        .form-note
+          strong 🔒 Roehampton University community only.
+          |  Your contact email is only shown to logged-in members.
+
+        button.submit-btn(type="submit") Post Listing → (+5 points)

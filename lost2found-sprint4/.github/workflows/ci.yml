@@ -1,0 +1,68 @@
+name: lost2found CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: lost2found_db
+          MYSQL_USER: lost2found_user
+          MYSQL_PASSWORD: lost2found_pass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -u lost2found_user -plost2found_pass"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Wait for MySQL
+        run: |
+          until mysqladmin ping -h 127.0.0.1 -u lost2found_user -plost2found_pass --silent; do
+            echo "Waiting for MySQL..."
+            sleep 3
+          done
+
+      - name: Run database schema
+        run: |
+          mysql -h 127.0.0.1 -u lost2found_user -plost2found_pass lost2found_db < db/schema.sql
+
+      - name: Run tests
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_USER: lost2found_user
+          DB_PASSWORD: lost2found_pass
+          DB_NAME: lost2found_db
+          SESSION_SECRET: test-secret
+          PORT: 3000
+        run: npm test
+
+      - name: Build Docker image
+        run: docker build -t lost2found:${{ github.sha }} .
+
+      - name: Confirm build success
+        run: echo "✅ Build and tests passed for commit ${{ github.sha }}"

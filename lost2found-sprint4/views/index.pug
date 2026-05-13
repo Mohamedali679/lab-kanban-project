@@ -1,0 +1,203 @@
+extends layout
+
+block content
+  //- HERO
+  section.hero
+    .hero-content
+      .hero-eyebrow Roehampton University · Community Platform · Sprint 4
+      h1
+        | Lost something?
+        br
+        span.hero-accent Find it here.
+      p.hero-sub
+        | The official lost &amp; found board for Roehampton University.
+        | Post items, message finders, get matched automatically and build your reputation.
+      .hero-ctas
+        a.btn-hero-primary(href="/items/new/post") 📢 Report an Item
+        a.btn-hero-secondary(href="/items") Browse All Items
+      .hero-note 🔒 Roehampton University accounts only · localhost:3000
+
+    .hero-visual
+      .hero-card.hc-lost
+        .hc-type Lost
+        .hc-title iPhone 15 Pro · Black case
+        .hc-loc 📍 Roehampton Library
+        .hc-time 2 hours ago
+      .hero-card.hc-found
+        .hc-type Found
+        .hc-title Student ID Card
+        .hc-loc 📍 University Canteen
+        .hc-time Just now
+      .hero-card.hc-lost
+        .hc-type Lost
+        .hc-title House &amp; Bike Keys
+        .hc-loc 📍 Sports Centre
+        .hc-time Yesterday
+
+  //- STATS
+  section.stats-bar
+    .stat
+      .stat-num= stats.lost_count || 0
+      .stat-label Active Lost
+    .stat
+      .stat-num= stats.found_count || 0
+      .stat-label Active Found
+    .stat
+      .stat-num= stats.resolved_count || 0
+      .stat-label Reunited
+    .stat
+      .stat-num= stats.user_count || 0
+      .stat-label Members
+    .stat
+      .stat-num= stats.message_count || 0
+      .stat-label Messages Sent
+
+  //- SMART RECOMMENDATIONS (if logged in and has lost items)
+  if recommendations && recommendations.length
+    section.recommendations-section
+      .container
+        .section-header
+          span.section-eyebrow 🤖 Smart Matching
+          h2 Potential Matches For You
+          p.rec-sub Our algorithm found these possible matches for your lost items
+        .rec-grid
+          each rec in recommendations
+            .rec-card
+              .rec-score-badge #{rec.score}% match
+              .rec-cols
+                .rec-side.rec-lost
+                  .rec-label 🔍 Your Lost Item
+                  a.rec-title(href=`/items/${rec.lost.id}`)= rec.lost.title
+                  .rec-loc 📍 #{rec.lost.location}
+                .rec-arrow ⟷
+                .rec-side.rec-found
+                  .rec-label ✋ Potential Match
+                  a.rec-title(href=`/items/${rec.found.id}`)= rec.found.title
+                  .rec-loc 📍 #{rec.found.location}
+              .rec-actions
+                a.rec-btn(href=`/items/${rec.found.id}`) View Match →
+
+  //- RECENT ITEMS
+  section.recent-section
+    .container
+      .section-header
+        span.section-eyebrow Live Board
+        h2 Recent Listings
+        a.see-all(href="/items") See all →
+      if recentItems.length
+        .items-grid
+          each item in recentItems
+            a.item-card(href=`/items/${item.id}`)
+              .item-card-header
+                span.item-type(class=item.type==='lost'?'type-lost':'type-found')
+                  = item.type==='lost' ? '🔍 Lost' : '✋ Found'
+                span.item-cat= `${item.category_icon||'📦'} ${item.category_name||'Other'}`
+                if item.reward_points > 0
+                  span.reward-badge +#{item.reward_points}pts
+              h3.item-title= item.title
+              p.item-desc= item.description.substring(0,100)+(item.description.length>100?'…':'')
+              .item-card-footer
+                span.item-loc 📍 #{item.location.split(',')[0]}
+                span.item-user by #{item.user_name}
+      else
+        p.no-items No items yet. #[a(href="/items/new/post") Be the first!]
+
+  //- PURPOSE
+  section.purpose-section
+    .container
+      .purpose-header
+        span.section-eyebrow Our Purpose
+        h2 Sharing, Exchange &amp; Building Community
+      .purpose-grid
+        .purpose-card
+          .purpose-icon 🔍
+          h3 Report Lost Items
+          p Post anything you've misplaced on campus — description, location, date, reward points.
+        .purpose-card
+          .purpose-icon 🙌
+          h3 Return Found Items
+          p Found something? Post it. Contact details only visible to Roehampton accounts.
+        .purpose-card
+          .purpose-icon 🤖
+          h3 Smart Matching
+          p Our algorithm automatically matches lost items with found items by category, location and date.
+        .purpose-card
+          .purpose-icon 💬
+          h3 In-App Messaging
+          p Contact finders and owners securely without sharing your personal contact details.
+        .purpose-card
+          .purpose-icon ⭐
+          h3 Ratings &amp; Trust
+          p Rate users after successful handovers. Build your reputation and earn points.
+        .purpose-card
+          .purpose-icon 🔒
+          h3 Roehampton Only
+          p Only verified Roehampton University email holders can register and post.
+
+  //- HOW IT WORKS
+  section.how-section
+    .container
+      .section-header
+        span.section-eyebrow Simple Process
+        h2 How lost2found Works
+      .steps-grid
+        .step
+          .step-n 1
+          h3 Create Account
+          p Register with your #[strong @roehampton.ac.uk] email. Earn 5 points on your first post.
+        .step
+          .step-n 2
+          h3 Post Your Item
+          p Add a title, description, location, category and optional reward points.
+        .step
+          .step-n 3
+          h3 Get Matched
+          p Our algorithm scans all items and notifies you of potential matches automatically.
+        .step
+          .step-n 4
+          h3 Message & Meet
+          p Use in-app messaging. Arrange a safe campus handover. Mark as resolved for +20 points.
+
+  //- LEADERBOARD
+  section.leaderboard-section
+    .container
+      .section-header
+        span.section-eyebrow Community Heroes
+        h2 Points Leaderboard
+      .leaderboard
+        each u, i in topUsers
+          a.lb-row(href=`/users/${u.id}`)
+            .lb-rank= i + 1
+            .lb-avatar= u.name.split(' ').map(w=>w[0]).join('').substring(0,2)
+            .lb-info
+              .lb-name= u.name
+              .lb-stars
+                if u.avg_rating
+                  each n in [1,2,3,4,5]
+                    span(class=n<=u.avg_rating?'star-on':'star-off') ★
+                  span.lb-rating= u.avg_rating + '/5'
+                else
+                  span.lb-norating No ratings yet
+            .lb-points
+              span.pts-num= u.points
+              span.pts-label pts
+
+  //- TEAM SECTION
+  section.team-section
+    .container
+      .section-header
+        span.section-eyebrow Group: 5 Engineers
+        h2 Meet the Team
+        p.team-sub CMP-N204-0 Software Engineering · University of Roehampton · 2026
+      .team-grid
+        each member in team
+          .team-card
+            .team-avatar= member.name.split(' ').map(w=>w[0]).join('').substring(0,2)
+            .team-name= member.name
+            .team-id Student ID: #{member.id}
+            .team-role Developer
+        .team-card.team-uni
+          .team-avatar 🎓
+          .team-name University of Roehampton
+          .team-id London
+          .team-role CMP-N204-0

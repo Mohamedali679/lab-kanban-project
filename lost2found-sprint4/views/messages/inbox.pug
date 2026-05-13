@@ -1,0 +1,28 @@
+extends ../layout
+
+block content
+  section.page-header
+    .container
+      h1 Messages
+      p.page-sub Your conversations
+
+  section.inbox-section
+    .container
+      if conversations.length
+        .conv-list
+          each c in conversations
+            a.conv-row(href=`/messages/${c.other_user_id}`)
+              .conv-avatar= c.other_name.split(' ').map(w=>w[0]).join('').substring(0,2)
+              .conv-info
+                .conv-name= c.other_name
+                .conv-preview= c.last_message ? c.last_message.substring(0,80)+'…' : 'No messages yet'
+              .conv-meta
+                .conv-time= new Date(c.last_at).toLocaleDateString('en-GB',{day:'numeric',month:'short'})
+                if c.unread > 0
+                  .conv-unread= c.unread
+      else
+        .empty-state
+          .empty-icon 💬
+          h3 No conversations yet
+          p Start a conversation by messaging someone from an item listing.
+          a.btn-post(href="/items") Browse items →

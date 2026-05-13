@@ -1,0 +1,29 @@
+extends ../layout
+
+block content
+  section.auth-section
+    .auth-card
+      .auth-logo
+        span.brand-lost lost2
+        span.brand-found found
+      h1.auth-title Join the community
+      p.auth-sub Create your lost2found account
+      if error
+        .auth-error= error
+      form.auth-form(method="POST" action="/users/register")
+        .form-group
+          label.form-label Full Name
+          input.form-input(type="text" name="name" required placeholder="Your full name")
+        .form-group
+          label.form-label Roehampton University Email *
+          input.form-input(type="email" name="email" required placeholder="yourname@roehampton.ac.uk")
+          .form-hint Must end in @roehampton.ac.uk
+        .form-group
+          label.form-label Student ID
+          input.form-input(type="text" name="student_id" placeholder="e.g. A00015026")
+        .form-group
+          label.form-label Password (min 8 characters)
+          input.form-input(type="password" name="password" required minlength="8" placeholder="Choose a secure password")
+        button.submit-btn(type="submit") Create Account →
+      p.auth-switch Already registered? #[a(href="/users/login") Login]
+      p.auth-note 🔒 Roehampton University community only

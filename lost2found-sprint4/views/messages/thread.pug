@@ -1,0 +1,24 @@
+extends ../layout
+
+block content
+  section.page-header
+    .container
+      .thread-header
+        a(href="/messages") ← Inbox
+        h1 #{otherUser.name}
+        p.page-sub #{otherUser.student_id || 'Roehampton University'}
+
+  section.thread-section
+    .container.thread-container
+      .thread-messages
+        each msg in thread
+          .message(class=msg.sender_id===meId?'msg-mine':'msg-theirs')
+            if msg.item_title
+              .msg-context Re: #[a(href=`/items/${msg.item_id}`)= msg.item_title]
+            .msg-bubble= msg.content
+            .msg-time= new Date(msg.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})
+
+      form.msg-form(method="POST" action="/messages/send")
+        input(type="hidden" name="receiver_id" value=otherUser.id)
+        textarea.msg-input(name="content" placeholder=`Message ${otherUser.name}…` required rows="3")
+        button.msg-send(type="submit") Send →

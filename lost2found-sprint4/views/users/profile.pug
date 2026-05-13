@@ -1,0 +1,73 @@
+extends ../layout
+
+block content
+  section.profile-section
+    .container.profile-container
+      .profile-header
+        .profile-avatar= profileUser.name.split(' ').map(w=>w[0]).join('').substring(0,2)
+        .profile-info
+          h1.profile-name= profileUser.name
+          p.profile-id= profileUser.student_id || 'Roehampton University'
+          p.profile-bio= profileUser.profile_bio || 'Roehampton University community member.'
+          .profile-stars
+            if profileUser.avg_rating
+              each n in [1,2,3,4,5]
+                span(class=n<=profileUser.avg_rating?'star-on':'star-off') ★
+              span.profile-rating  #{profileUser.avg_rating}/5 (#{profileUser.rating_count} reviews)
+            else
+              span.user-norating No ratings yet
+          p.profile-joined Member since #{new Date(profileUser.created_at).toLocaleDateString('en-GB',{month:'long',year:'numeric'})}
+        .profile-stats-block
+          .pstat
+            .pstat-num= items.filter(i=>i.type==='lost').length
+            .pstat-label Lost
+          .pstat
+            .pstat-num= items.filter(i=>i.type==='found').length
+            .pstat-label Found
+          .pstat
+            .pstat-num= items.filter(i=>i.status==='resolved').length
+            .pstat-label Resolved
+          .pstat
+            .pstat-num= profileUser.points || 0
+            .pstat-label Points
+
+      //- Message button
+      if user && user.id !== profileUser.id
+        .profile-actions
+          a.btn-message(href=`/messages/${profileUser.id}`) 💬 Send Message
+
+      h2.profile-items-title Items Posted
+      if items.length
+        .items-grid
+          each item in items
+            a.item-card(href=`/items/${item.id}`)
+              .item-card-header
+                span.item-type(class=item.type==='lost'?'type-lost':'type-found')
+                  = item.type==='lost' ? '🔍 Lost' : '✋ Found'
+                if item.status==='resolved'
+                  span.badge-resolved-sm ✅ Resolved
+                else
+                  span.item-cat= `${item.category_icon||'📦'} ${item.category_name||'Other'}`
+              h3.item-title= item.title
+              p.item-desc= item.description.substring(0,90)+'…'
+              .item-card-footer
+                span.item-loc 📍 #{item.location.split(',')[0]}
+                span.item-date= new Date(item.date_occurred).toLocaleDateString('en-GB',{day:'numeric',month:'short'})
+      else
+        .empty-state
+          p No items posted yet.
+
+      //- Ratings
+      if userRatings && userRatings.length
+        h2.profile-items-title(style="margin-top:2rem") Reviews
+        .ratings-list
+          each r in userRatings
+            .rating-card
+              .rating-header
+                .rating-stars
+                  each n in [1,2,3,4,5]
+                    span(class=n<=r.score?'star-on':'star-off') ★
+                .rating-from by #{r.rater_name}
+                .rating-date= new Date(r.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})
+              if r.comment
+                p.rating-comment= r.comment

@@ -1,0 +1,23 @@
+nav.navbar
+  a.navbar-brand(href="/")
+    span.brand-lost lost2
+    span.brand-found found
+    span.brand-sub · Roehampton University
+  .navbar-links
+    a(href="/items") Browse
+    a(href="/items?type=lost") Lost
+    a(href="/items?type=found") Found
+    a(href="/users") Community
+    if user
+      a.btn-post(href="/items/new/post") + Post Item
+      a.nav-msgs(href="/messages")
+        | 💬
+        if unreadCount && unreadCount > 0
+          span.msg-badge= unreadCount
+      a.nav-notifs(href="/users/notifications") 🔔
+      a.nav-user(href="/users/#{user.id}") #{user.name.split(' ')[0]}
+      a.nav-logout(href="/users/logout") Logout
+    else
+      a.btn-login(href="/users/login") Login
+      a.btn-register(href="/users/register") Register
+  button.nav-toggle(onclick="toggleNav()") ☰
